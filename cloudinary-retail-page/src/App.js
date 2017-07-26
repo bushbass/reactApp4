@@ -1,17 +1,19 @@
 import React, { Component } from 'react';
 import {Image, CloudinaryContext, Transformation} from 'cloudinary-react';
 import { SketchPicker } from 'react-color';
+import './App.css';
 
 const ImageTransformations = ({width, rgb, selectedShirt, text}) => {
-  return (
-      <Image publicId={selectedShirt.main+'.jpg'}>
-        <Transformation width={width} crop="scale" />
-        <Transformation effect={'red:'+((-1+rgb.r/255)*100).toFixed(0)} />
-        <Transformation effect={'blue:'+((-1+rgb.b/255)*100).toFixed(0)} />
-        <Transformation effect={'green:'+((-1+rgb.g/255)*100).toFixed(0)} />
-        <Transformation underlay={selectedShirt.underlay} flages="relateive" width="1.0" />
-        <Transformation overlay={selectedShirt.overlay} flages="relateive" width="1.0" />
-      </Image>
+    return (
+        <Image publicId={selectedShirt.main+'.jpg'}>
+            <Transformation width={width} crop="scale" />
+            <Transformation effect={'red:'+((-1+rgb.r/255)*100).toFixed(0)} />
+            <Transformation effect={'blue:'+((-1+rgb.b/255)*100).toFixed(0)} />
+            <Transformation effect={'green:'+((-1+rgb.g/255)*100).toFixed(0)} />
+            <Transformation underlay={selectedShirt.underlay}  flags="relative" width="1.0" />
+            <Transformation overlay={selectedShirt.overlay}  flags="relative" width="1.0" />
+            <Transformation overlay={'text:Roboto_30:'+text} flags="relative" gravity="center" />
+        </Image>
     );
 };
 
@@ -23,8 +25,9 @@ class App extends Component {
       shirts: [
         defaultShirt,
         {id: 2, main: 'laying-shirt', underlay: '', overlay: ''},
-        {id: 3, main: 'hanging_t-shirt', underlay: '', overlay: 'hangar'}
+        {id: 3, main: 'hanging_t-shirt', underlay: '', overlay: 'hanger'}
       ],
+      text: ' ',
       selectedShirt: defaultShirt,
       background: {rgb:{r:255,g:255,b:255}}
     };
@@ -34,6 +37,10 @@ class App extends Component {
     //updates color
     this.setState({ background: color }, _ => this.forceUpdate());
   };
+
+  handleTextChange(event) {
+    this.setState({text: event.target.value}, _ => this.forceUpdate())
+  }
 
   selectShirt(thumb) {
     //Updates main image
@@ -46,10 +53,10 @@ class App extends Component {
 
     return (
       <div className="App">
-        <CloudinaryContext cloudName="<alex-abc>">
+        <CloudinaryContext cloudName="alex-abc">
           <div id="demoContainer">
             <div id="header">
-              <a href="http://cloudinarty.com/">
+              <a href="http://cloudinary.com/">
                 <img width="172" height="38" src="http://res-1.cloudinary.com/cloudinary/image/asset/dpr_2.0/logo-e0df892053afd966cc0bfe047ba93ca4.png" alt="Cloudinary Logo" />
               </a>
               <h1>Product Personaliztion Demo</h1>
@@ -66,19 +73,16 @@ class App extends Component {
             <div id="imageThumbs">
               <ul id="thumbs">
                 {this.state.shirts.map(thumb => {
-                    return(
-                      <li className={thumb.main === this.state.selectedShirt.main ? 'active': ''} onClick={this.selectShirt.bind(this, thumb)} key={thumb.id}>
-                        {/*<Image publicId={thumb.main}>*/}
-                          {/*<Transformation width="75" crop="scale" />*/}
-                        {/*</Image>*/}
-                        <ImageTransformations
-                          width="75"
-                          rgb={rgb}
-                          selectedShirt={thumb}
-                          text={' '} />
-                      </li>
+                   return (
+                    <li className={thumb.main === this.state.selectedShirt.main ? 'active': ''} onClick={this.selectShirt.bind(this, thumb)} key={thumb.id}>
+                      <ImageTransformations
+                         width="75"
+                         rgb={rgb}
+                         selectedShirt={thumb}
+                         text={' '} />
+                    </li>
                     )
-                })}
+                  })}
               </ul>
             </div>
           </div>
@@ -89,6 +93,10 @@ class App extends Component {
                 color={ this.state.background.hex }
                 onChangeComplete={ this.handleColorChange.bind(this) }
               />
+            </div>
+            <div className="inputSelections">
+              <h2>Text:</h2>
+              <input className="form-control" type="email" placeholder="Enter text" value={this.state.text} onChange={this.handleTextChange.bind(this)} />
             </div>
           </div>
         </CloudinaryContext>
